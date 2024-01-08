@@ -3,17 +3,16 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <Grid.h>
 #include <Transformations.h>
 
 TrafficJam::TrafficJam(QWidget *parent)
     : QMainWindow(parent)
 {
     setupUi();
-    connect(staticScene_button, &QPushButton::clicked, this, &TrafficJam::readOBJ);
+    connect(staticScene_button, &QPushButton::clicked, this, &TrafficJam::sceneStatic);
     connect(topmover_button, &QPushButton::clicked, this, &TrafficJam::UpperMove);
     connect(downmover_button, &QPushButton::clicked, this, &TrafficJam::DownMove);
-    connect(pushButton, &QPushButton::clicked, this, &TrafficJam::LeftMove);
+    connect(leftmover_button, &QPushButton::clicked, this, &TrafficJam::LeftMove);
     connect(rightmover_button, &QPushButton::clicked, this, &TrafficJam::RightMove);
     connect(stop_button, &QPushButton::clicked, this, &TrafficJam::stop);
     connect(car_button, &QPushButton::clicked, this, &TrafficJam::selectCar);
@@ -21,7 +20,8 @@ TrafficJam::TrafficJam(QWidget *parent)
 }
 
 TrafficJam::~TrafficJam()
-{}
+{
+}
 void TrafficJam::setupUi()
 {
 
@@ -72,10 +72,10 @@ void TrafficJam::setupUi()
     downmover_button->setText("BACKWARD");
     horizontalLayout_4->addWidget(downmover_button);
 
-    pushButton = new QPushButton(horizontalLayoutWidget);
-    pushButton->setObjectName("pushButton");
-    pushButton->setText("LEFT");
-    horizontalLayout_4->addWidget(pushButton);
+    leftmover_button = new QPushButton(horizontalLayoutWidget);
+    leftmover_button->setObjectName("pushButton");
+    leftmover_button->setText("LEFT");
+    horizontalLayout_4->addWidget(leftmover_button);
     rightmover_button = new QPushButton(horizontalLayoutWidget);
     rightmover_button->setObjectName("pushButton");
     rightmover_button->setText("RIGHT");
@@ -115,65 +115,16 @@ void TrafficJam::setupUi()
     QMetaObject::connectSlotsByName(this);
 } 
 void TrafficJam::sceneStatic() {
-    std::vector<float> vertices;
-    std::vector<float> color;
-    Grid grid(vertices, color, 8);
-
-    for (int i = 0; i < vertices.size(); i += 3) {
-        mVertices << vertices[i] << vertices[i + 1] << vertices[i + 2];
-        mColors << 1 << 0 << 1;
-    }
-
-    
-    mVertices.clear();
-    mColors.clear();
-    std::vector<float>carVertices;
-    std::vector<float>carColor;
-
-    mRenderer->setVectorOfLines(mVertices);
-    mRenderer->setColorOfLines(mColors);
-    mVertices.clear();
-    mColors.clear();
-}
-void TrafficJam::readOBJ() {
-    
-    std::string filePath = "D:\\Shweta_Workplace\\TrafficJam\\11497_Car_v2.obj";
-    std::ifstream dataFile;
-    dataFile.open(filePath);
-    if (!dataFile.is_open()) {
-        std::cout << "File not exit" << std::endl;
-        return;
-    }
-    std::vector<float> objVertices;
-    std::vector<float> objColors;
-    std::string line;
-    while (std::getline(dataFile, line)) {
-        std::istringstream iss(line);
-        std::string token;
-        iss >> token;
-        if (token == "v") {
-            float x, y, z;
-            iss >> x >> y >> z;
-            objVertices.push_back(x * 0.1);
-            objVertices.push_back(y * 0.1);
-            objVertices.push_back(z * 0.1);
-            Point3D p(x*0.1, y*0.1, z*0.1 );
-            mPoints.push_back(p);
-            objColors.push_back(1.0);
-            objColors.push_back(1.0);
-            objColors.push_back(0.0);
-        
-        }  
-    }
+    readOBJ();
     std::vector<Point3D> mCarPoints;
     std::vector<float> mCarColors;
     for (int i = 0; i < mPoints.size(); i++) {
-        Point3D P(mPoints[i].X() - 30, mPoints[i].Y()+50, mPoints[i].Z());;
+        Point3D P(mPoints[i].X() - 30, mPoints[i].Y() + 50, mPoints[i].Z());;
         mCarPoints.push_back(P);
 
     }
-    for (int i = 0; i < objColors.size(); i ++) {
-        mCarColors.push_back(objColors[i]);
+    for (int i = 0; i < mObjColors.size(); i++) {
+        mCarColors.push_back(mObjColors[i]);
 
     }
     Car c1(mCarPoints, mCarColors);
@@ -181,12 +132,12 @@ void TrafficJam::readOBJ() {
     mCarPoints.clear();
     mCarColors.clear();
     for (int i = 0; i < mPoints.size(); i++) {
-        Point3D P(mPoints[i].X() , mPoints[i].Y()+50, mPoints[i].Z());;
+        Point3D P(mPoints[i].X(), mPoints[i].Y() + 50, mPoints[i].Z());;
         mCarPoints.push_back(P);
 
     }
-    for (int i = 0; i < objColors.size(); i++) {
-        mCarColors.push_back(objColors[i]);
+    for (int i = 0; i < mObjColors.size(); i++) {
+        mCarColors.push_back(mObjColors[i]);
 
     }
     Car c2(mCarPoints, mCarColors);
@@ -194,12 +145,12 @@ void TrafficJam::readOBJ() {
     mCarPoints.clear();
     mCarColors.clear();
     for (int i = 0; i < mPoints.size(); i++) {
-        Point3D P(mPoints[i].X()+30, mPoints[i].Y()+50, mPoints[i].Z());;
+        Point3D P(mPoints[i].X() + 30, mPoints[i].Y() + 50, mPoints[i].Z());;
         mCarPoints.push_back(P);
 
     }
-    for (int i = 0; i < objColors.size(); i++) {
-        mCarColors.push_back(objColors[i]);
+    for (int i = 0; i < mObjColors.size(); i++) {
+        mCarColors.push_back(mObjColors[i]);
 
     }
     Car c3(mCarPoints, mCarColors);
@@ -207,12 +158,12 @@ void TrafficJam::readOBJ() {
     mCarPoints.clear();
     mCarColors.clear();
     for (int i = 0; i < mPoints.size(); i++) {
-        Point3D P(mPoints[i].X() -30, mPoints[i].Y(), mPoints[i].Z());;
+        Point3D P(mPoints[i].X() - 30, mPoints[i].Y(), mPoints[i].Z());;
         mCarPoints.push_back(P);
 
     }
-    for (int i = 0; i < objColors.size(); i++) {
-        mCarColors.push_back(objColors[i]);
+    for (int i = 0; i < mObjColors.size(); i++) {
+        mCarColors.push_back(mObjColors[i]);
 
     }
     Car c4(mCarPoints, mCarColors);
@@ -224,8 +175,8 @@ void TrafficJam::readOBJ() {
         mCarPoints.push_back(P);
 
     }
-    for (int i = 0; i < objColors.size(); i++) {
-        mCarColors.push_back(objColors[i]);
+    for (int i = 0; i < mObjColors.size(); i++) {
+        mCarColors.push_back(mObjColors[i]);
 
     }
     Car c5(mCarPoints, mCarColors);
@@ -233,24 +184,55 @@ void TrafficJam::readOBJ() {
     mCarPoints.clear();
     mCarColors.clear();
     for (int i = 0; i < mPoints.size(); i++) {
-        Point3D P(mPoints[i].X()+30, mPoints[i].Y() , mPoints[i].Z());;
+        Point3D P(mPoints[i].X() + 30, mPoints[i].Y(), mPoints[i].Z());;
         mCarPoints.push_back(P);
 
     }
-    for (int i = 0; i < objColors.size(); i+=3) {
-        mCarColors.push_back(objColors[i]);
+    for (int i = 0; i < mObjColors.size(); i += 3) {
+        mCarColors.push_back(mObjColors[i]);
 
     }
     Car c6(mCarPoints, mCarColors);
     mCarContainer.push_back(c6);
     mCarPoints.clear();
     mCarColors.clear();
-    addVerticesColor();       
-    objVertices.clear();
-    objColors.clear();
+    addVerticesColor();
+    mObjVertices.clear();
+    mObjColors.clear();
     mRenderer->setVectorOfLines(mVertices);
     mRenderer->setColorOfLines(mColors);
+
+
+}
+void TrafficJam::readOBJ() {
     
+    std::string filePath = "D:\\Shweta_Workplace\\TrafficJam\\11497_Car_v2.obj";
+    std::ifstream dataFile;
+    dataFile.open(filePath);
+    if (!dataFile.is_open()) {
+        std::cout << "File not exit" << std::endl;
+        return;
+    }
+    
+    std::string line;
+    while (std::getline(dataFile, line)) {
+        std::istringstream iss(line);
+        std::string token;
+        iss >> token;
+        if (token == "v") {
+            float x, y, z;
+            iss >> x >> y >> z;
+            mObjVertices.push_back(x * 0.1);
+            mObjVertices.push_back(y * 0.1);
+            mObjVertices.push_back(z * 0.1);
+            Point3D p(x*0.1, y*0.1, z*0.1 );
+            mPoints.push_back(p);
+            mObjColors.push_back(1.0);
+            mObjColors.push_back(1.0);
+            mObjColors.push_back(0.0);
+        
+        }  
+    }
     
 }
 void TrafficJam::LeftMove() {
@@ -294,7 +276,7 @@ void TrafficJam::stop() {
     mRenderer->setColorOfLines(mColors);
 }
 void TrafficJam::selectCar() {
-    QPoint pos = pushButton->mapToGlobal(QPoint(0, pushButton->height()));
+    QPoint pos = car_button->mapToGlobal(QPoint(0, car_button->height()));
 
     connect(car1_, &QAction::triggered, this, [=]() {
         car_no = 0;
