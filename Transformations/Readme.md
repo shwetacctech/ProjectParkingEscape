@@ -9,6 +9,7 @@ The Transformations class is part of a library that provides functionality for t
 std::vector<Point3D> translate_X_Left(std::vector<Point3D> inVertices);
 ```
 ### `translate_X_Right`
+```
 std::vector<Point3D> translate_X_Right(std::vector<Point3D> inVertices);
 ```
 ### `translate_Y_UP`
