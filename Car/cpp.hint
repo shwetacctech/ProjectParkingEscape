@@ -1,0 +1,2 @@
+#define CAR_API __declspec(dllexport)
+#define CAR_API __declspec(dllimport)
