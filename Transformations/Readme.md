@@ -13,10 +13,10 @@ std::vector<Point3D> translate_X_Right(std::vector<Point3D> inVertices);
 ```
 ### `translate_Y_UP`
 cpp
-Copy code
+```
 std::vector<Point3D> translate_Y_UP(std::vector<Point3D> inVertices);
 Translates the input vertices upward along the Y-axis.
-
+```
 ### `translate_X_Down`
 cpp
 ```
